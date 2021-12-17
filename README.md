@@ -6,12 +6,11 @@
 
 ### Background
 
-- Training DALLE model from scratch demands paired dataset of images and captions.
-- OpenAI DALLE is trained with more than 250 million text-image pairs for the training.
-- If the dataset isn’t large enough and is limited to specific domains, scarcity in number of vocabularies is inevitable.
+- Training DALLE model from scratch demands large size paired dataset of images and captions. For example, OpenAI DALLE is trained with more than 250 million text-image pairs for the training.
+- If the dataset isn’t large enough and is limited to specific domains, scarcity in number of vocabularies in the trained DALLE model is inevitable.
 - Therefore, inferencing from such DALLE models could be problematic if the given sentence query is unconnected to the originally trained captions’ text dataset.
 
-### KoDALLE's Result on Fashion Dataset
+### KoDALLE's Result on Small Size Fashion Dataset
 
 **The team constructed Text to Fashion Design DALLE model in Korean language with less than 100k text-image pairs.**
 
@@ -61,8 +60,8 @@ KoDALLE with klue/roberta-large's wpe and wte which is trainable on 16GB GPU Goo
 
 ### Significance
 
-- Suggests researchers how to create DALLE model from its own languages.
-- Proposes method of adding robustness by utilizing pretrained model.
+- Suggests effortless method of creating DALLE model for their own languages if pretrained language model is available.
+- Introduces solution for domain specific DALLE models to be robust on input sentence queries.
 
 ---
 
