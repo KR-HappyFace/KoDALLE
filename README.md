@@ -1,6 +1,6 @@
 # KoDALLE
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1sKNRH0fM73uLi-6BDgfGs3YiiVdvs6lU?usp=sharing)  [![Wandb Log](https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg)](https://wandb.ai/kodalle/KoDALLE)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1sKNRH0fM73uLi-6BDgfGs3YiiVdvs6lU?usp=sharing) [![Wandb Log](https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg)](https://wandb.ai/kodalle/KoDALLE)
 
 **Utilizing pretrained language model’s token embedding layer and position embedding layer as DALLE’s text encoder.**
 
@@ -69,6 +69,7 @@ KoDALLE with klue/roberta-large's wpe and wte which is trainable on 16GB GPU Goo
 ### WIP
 
 - Add KoCLIP written in pytorch.
-- Update model trained with 500k text-image pairs.
+- Model trained with 500k text-image pairs.
 - Modulize in python code.
-- Add Inference code.
+- Update Inference code.
+- Update metrics on test and validation dataset.
