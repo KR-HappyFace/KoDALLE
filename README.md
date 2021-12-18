@@ -67,8 +67,12 @@ KoDALLE with klue/roberta-large's wpe and wte which is trainable on 16GB GPU Goo
 
 ### WIP
 
-- Add KoCLIP written in pytorch.
-- Model trained with 500k text-image pairs.
-- Modulize in python code.
-- Update Inference code.
-- Update metrics on test and validation dataset.
+-[ ] Add KoCLIP written in pytorch.
+
+-[ ] Model trained with 500k text-image pairs.
+
+-[ ] Modulize in python code.
+
+-[x] Update Inference code.
+
+-[ ] Update metrics on test and validation dataset.
