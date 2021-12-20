@@ -1,31 +1,31 @@
 DALLE_CFG:
   # DALLE_CFG.VOCAB_SIZE: tokenizer.vocab_size  # refer to EDA, there are only 333 words total. but input_ids index should be in within 0 ~ 52000: https://github.com/boostcampaitech2-happyface/DALLE-Couture/blob/pytorch-dalle/EDA.ipynb
-  DALLE_CFG.DALLE_PATH: None  # './dalle.pt'
-  DALLE_CFG.TAMING: True  # use VAE from taming transformers paper
-  DALLE_CFG.BPE_PATH: None
-  DALLE_CFG.RESUME: exists(DALLE_CFG.DALLE_PATH)
+  DALLE_PATH: None  # './dalle.pt'
+  TAMING: True  # use VAE from taming transformers paper
+  BPE_PATH: None
+  RESUME: exists(DALLE_PATH)
 
-  DALLE_CFG.EPOCHS: 3
-  DALLE_CFG.BATCH_SIZE: 16
+  EPOCHS: 3
+  BATCH_SIZE: 16
 
   # configuration mimics of: https://github.com/lucidrains/DALLE-pytorch/discussions/131
   # Hyperparameter testing on pytorch-dalle: https://github.com/lucidrains/DALLE-pytorch/issues/84
   # Another Reference for Hyperparams https://github.com/lucidrains/DALLE-pytorch/issues/86#issue-832121328
-  DALLE_CFG.LEARNING_RATE: 3e-4
-  DALLE_CFG.GRAD_CLIP_NORM: 0.5
+  LEARNING_RATE: 3e-4
+  GRAD_CLIP_NORM: 0.5
 
-  DALLE_CFG.TEXT_SEQ_LEN: 64
-  DALLE_CFG.DEPTH: 12
-  DALLE_CFG.HEADS: 8
-  DALLE_CFG.DIM_HEAD: 64  # 8개의 head, 64는 각 head의 dimension
-  DALLE_CFG.REVERSIBLE: True
-  DALLE_CFG.LOSS_IMG_WEIGHT: 7
-  DALLE_CFG.ATTN_TYPES: "full"
-  DALLE_CFG.FF_DROPOUT: 0.2  # Feed forward dropout
-  DALLE_CFG.ATTN_DROPOUT: 0.2  # Attention Feed forward dropout
-  DALLE_CFG.STABLE: None  # stable_softmax
-  DALLE_CFG.SHIFT_TOKENS: None
-  DALLE_CFG.ROTARY_EMB: None
+  TEXT_SEQ_LEN: 64
+  DEPTH: 12
+  HEADS: 8
+  DIM_HEAD: 64  # 8개의 head, 64는 각 head의 dimension
+  REVERSIBLE: True
+  LOSS_IMG_WEIGHT: 7
+  ATTN_TYPES: "full"
+  FF_DROPOUT: 0.2  # Feed forward dropout
+  ATTN_DROPOUT: 0.2  # Attention Feed forward dropout
+  STABLE: None  # stable_softmax
+  SHIFT_TOKENS: None
+  ROTARY_EMB: None
 
-  DALLE_CFG.resize_ratio: 1.0
-  DALLE_CFG.truncate_captions: True
+  resize_ratio: 1.0
+  truncate_captions: True
