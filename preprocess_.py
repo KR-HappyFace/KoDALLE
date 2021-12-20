@@ -7,9 +7,11 @@ def remove_style(input_text: str) -> str:
 
     for sentence in sentences:
         if "스타일" in sentence:
+            # remove the sentence from the list
             pass
         else:
             return_sentences.append(sentence)
+            pass
     # join sentences into one str
     return ".".join(return_sentences).strip()
 
@@ -24,4 +26,3 @@ def remove_subj(input_text: str) -> str:
       result.append(d)
 
     return ' '.join(result)
-

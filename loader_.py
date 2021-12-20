@@ -7,9 +7,8 @@ import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 from transformers import AutoTokenizer
-from preprocess import remove_style, remove_subj
 
-# -*- coding:utf8 -*-
+from preprocess import remove_style
 
 
 class TextImageDataset(Dataset):
