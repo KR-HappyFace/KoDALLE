@@ -53,10 +53,10 @@ def vae_config() -> EasyDict:
 
     VAE_CFG = EasyDict()
     VAE_CFG.MODEL_PATH = (
-        "/opt/ml/taming-transformers/pretrained_models/VQGAN_blue.ckpt"
+        "/opt/ml/taming-transformers/logs/blue_e4/checkpoint/VQGAN_blue.ckpt"
     )
     VAE_CFG.CONFIG_PATH = (
-        "/opt/ml/taming-transformers/configs/VQGAN_blue.yaml"
+        "/opt/ml/taming-transformers/logs/blue_e4/config/VQGAN_blue.yaml"
     )
 
     VAE_CFG.IMAGE_SIZE = 256
@@ -199,7 +199,6 @@ def remove_style(input_text: str) -> str:
 
 
 class TextImageDataset(Dataset):
-    @profile
     def __init__(
         self,
         text_folder: str,
@@ -258,7 +257,6 @@ class TextImageDataset(Dataset):
     def __len__(self):
         return len(self.keys)
 
-    @profile
     def __getitem__(self, ind):
         key = self.keys[ind]
         text_file = self.text_files[key]
@@ -372,8 +370,8 @@ class ResBlock(nn.Module):
     def forward(self, x):
         return self.net(x) + x
 
+
 class DALLE_Klue_Roberta(nn.Module):
-    @profile
     def __init__(
         self,
         *,
@@ -482,7 +480,6 @@ class DALLE_Klue_Roberta(nn.Module):
 
     @torch.no_grad()
     @eval_decorator
-    @profile
     def generate_texts(
         self, tokenizer, text=None, *, filter_thres=0.5, temperature=1.0
     ):
@@ -606,7 +603,6 @@ class DALLE_Klue_Roberta(nn.Module):
 
         return images
 
-    @profile
     def forward(self, text, image=None, mask=None, return_loss=False):
         assert (
             text.shape[-1] == self.text_seq_len
@@ -709,7 +705,6 @@ def save_model(save_path, params, model):
     torch.save(save_obj, save_path)
 
 
-@profile
 def train():
     for epoch in range(DALLE_CFG.EPOCHS):
         for i, (text, images, mask) in enumerate(dl):
@@ -762,11 +757,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--image_folder",
         type=str,
-        default="/opt/ml/final/DALLE-pytorch/data/cropped_img",
+        default="/opt/ml/DALLE-Couture/data/cropped_train_img",
         help="",
     )
     parser.add_argument(
-        "--text_folder", type=str, default="/opt/ml/final/DALLE-pytorch/data/caption3",
+        "--text_folder", type=str, default="/opt/ml/DALLE-Couture/data/train_label",
     )
     parser.add_argument("--batch_size", type=int, default=16, help="")
     parser.add_argument(
@@ -776,10 +771,10 @@ if __name__ == "__main__":
         help="Category of image transformer.",
     )
     parser.add_argument(
-        "--wte", type=str, default="/opt/ml/final/DALLE-pytorch/roberta_large_wte.pt", help=""
+        "--wte", type=str, default="/opt/ml/DALLE-pytorch/roberta_large_wte.pt", help=""
     )
     parser.add_argument(
-        "--wpe", type=str, default="/opt/ml/final/DALLE-pytorch/roberta_large_wpe.pt", help=""
+        "--wpe", type=str, default="/opt/ml/DALLE-pytorch/roberta_large_wpe.pt", help=""
     )
     parser.add_argument(
         "--save_path", type=str, default="./results", help="save dalle model path"
@@ -850,20 +845,20 @@ if __name__ == "__main__":
     assert len(ds) > 0, "dataset is empty"
 
     dl = DataLoader(ds, batch_size=DALLE_CFG.BATCH_SIZE, shuffle=True, drop_last=True)
-    #
-    # # DALLE Model
-    # dalle = DALLE_Klue_Roberta(
-    #     vae=vae, wpe_dir=args.wpe, wte_dir=args.wte, **dalle_params,
-    # ).to(device)
-    # opt = AdamP(dalle.parameters(), lr=DALLE_CFG.LEARNING_RATE)
-    #
-    # # Wandb
-    # run = wandb.init(
-    #     project="optimization",
-    #     entity="happyface-boostcamp",
-    #     resume=False,
-    #     config=dalle_params,
-    #     name=args.wandb_name,  # change it when you experiment
-    # )
-    #
-    # train()
+
+    # DALLE Model
+    dalle = DALLE_Klue_Roberta(
+        vae=vae, wpe_dir=args.wpe, wte_dir=args.wte, **dalle_params,
+    ).to(device)
+    opt = AdamP(dalle.parameters(), lr=DALLE_CFG.LEARNING_RATE)
+
+    # Wandb
+    run = wandb.init(
+        project="optimization",
+        entity="happyface-boostcamp",
+        resume=False,
+        config=dalle_params,
+        name=args.wandb_name,  # change it when you experiment
+    )
+
+    train()
