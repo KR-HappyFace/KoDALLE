@@ -1,0 +1,31 @@
+DALLE_CFG:
+  # DALLE_CFG.VOCAB_SIZE: tokenizer.vocab_size  # refer to EDA, there are only 333 words total. but input_ids index should be in within 0 ~ 52000: https://github.com/boostcampaitech2-happyface/DALLE-Couture/blob/pytorch-dalle/EDA.ipynb
+  DALLE_PATH: None  # './dalle.pt'
+  TAMING: True  # use VAE from taming transformers paper
+  BPE_PATH: None
+  RESUME: exists(DALLE_PATH)
+
+  EPOCHS: 3
+  BATCH_SIZE: 16
+
+  # configuration mimics of: https://github.com/lucidrains/DALLE-pytorch/discussions/131
+  # Hyperparameter testing on pytorch-dalle: https://github.com/lucidrains/DALLE-pytorch/issues/84
+  # Another Reference for Hyperparams https://github.com/lucidrains/DALLE-pytorch/issues/86#issue-832121328
+  LEARNING_RATE: 0.0003
+  GRAD_CLIP_NORM: 0.5
+
+  TEXT_SEQ_LEN: 64
+  DEPTH: 12
+  HEADS: 8
+  DIM_HEAD: 64  # 8개의 head, 64는 각 head의 dimension
+  REVERSIBLE: True
+  LOSS_IMG_WEIGHT: 7
+  ATTN_TYPES: "full"
+  FF_DROPOUT: 0.2  # Feed forward dropout
+  ATTN_DROPOUT: 0.2  # Attention Feed forward dropout
+  STABLE: None  # stable_softmax
+  SHIFT_TOKENS: None
+  ROTARY_EMB: None
+
+  resize_ratio: 1.0
+  truncate_captions: True
