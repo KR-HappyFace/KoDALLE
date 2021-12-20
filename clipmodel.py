@@ -9,6 +9,7 @@ from albumentations.pytorch import ToTensorV2
 from transformers import DistilBertModel
 import cv2
 import os
+
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
 
 
@@ -51,6 +52,12 @@ from transformers import DistilBertConfig
 class TextEncoder(nn.Module):
     def __init__(self, pretrained):
         super().__init__()
+        # if pretrained:
+        # config = DistilBertConfig.from_pretrained("monologg/distilkobert")
+        # config = RobertaConfig.from_pretrained("klue/roberta-large")
+        # self.model = RobertaModel(config)
+        # self.model = RobertaModel.from_pretrained("klue/roberta-large")
+        # self.model = DistilBertModel(config)
         self.model = DistilBertModel.from_pretrained("monologg/distilkobert")
 
         for p in self.model.parameters():
@@ -91,10 +98,14 @@ class CLIPModel(nn.Module):
         self,
     ):
         super().__init__()
+        # self.image_encoder = ModifiedResNet(
+        #    [3, 4, 6, 3], 0, 2048
         self.image_encoder = ImageEncoder("resnet50", trainable=True)
         # self.image_encoder = ImageEncoder("xcit_tiny_12_p8_224_dist", trainable=True)
         self.text_encoder = TextEncoder(pretrained=True)
-
+        # self.image_projection = ProjectionHead(
+        #    embedding_dim=2048, projection_dim=268, dropout=0.1
+        # )
         self.image_projection = ProjectionHead(
             embedding_dim=2048, projection_dim=512, dropout=0.1
         )
@@ -111,18 +122,31 @@ class CLIPModel(nn.Module):
             attention_mask=text["attention_mask"],
             # token_type_ids=text["token_type_ids"],
         )
-        
+        # Getting Image and Text Embeddings (with same dimension)
         image_embeddings = self.image_projection(image_features)
         text_embeddings = self.text_projection(text_features)
 
-        logits = (text_embeddings @ image_embeddings.T) * self.temperature
+        # Calculating the Loss
+        # logits = (text_embeddings @ image_embeddings.T) * self.temperature
 
-        targets = torch.arange(len(text_embeddings), device="cuda")
-        tttt = F.log_softmax(logits, dim=1)
+        # targets = torch.arange(len(text_embeddings), device="cuda")
+        # tttt = F.log_softmax(logits, dim=1)
+        # texts_loss = nn.CrossEntropyLoss()(tttt, targets)
+        # images_loss = nn.CrossEntropyLoss()(tttt.T, targets.T)
 
-        texts_loss = nn.CrossEntropyLoss()(logits, targets)
-        images_loss = nn.CrossEntropyLoss()(logits.T, targets.T)
+        # texts_loss = nn.CrossEntropyLoss()(logits, targets)
+        # images_loss = nn.CrossEntropyLoss()(logits.T, targets.T)
 
-        loss = (images_loss + texts_loss) / 2.0  # shape: (batch_size)
+        # images_similarity = image_embeddings @ image_embeddings.T
+        # texts_similarity = text_embeddings @ text_embeddings.T
+        # targets = F.softmax(
+        #    (images_similarity + texts_similarity) / 2 * self.temperature, dim=-1
+        # )
+        # targets = torch.arange(len(logits), device="cuda")
+        # texts_loss = cross_entropy(logits, targets, reduction="none")
+        # images_loss = cross_entropy(logits.T, targets.T, reduction="none")
+        # texts_loss = nn.CrossEntropyLoss()(logits, targets)
+        # images_loss = nn.CrossEntropyLoss()(logits.T, targets.T)
+        # loss = (images_loss + texts_loss) / 2.0  # shape: (batch_size)
         return text_embeddings, image_embeddings
         # return loss.mean()
