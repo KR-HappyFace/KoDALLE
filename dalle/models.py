@@ -12,8 +12,7 @@ from dalle_pytorch.vae import OpenAIDiscreteVAE, VQGanVAE
 
 from dalle_pytorch.transformer import Transformer, DivideMax
 from dalle_pytorch.attention import stable_softmax
-from ..utils import *
-
+from utils import *
 
 
 # discrete vae class
@@ -72,17 +71,19 @@ class DALLE_Klue_Roberta(nn.Module):
         self.text_emb = torch.load(wte_dir)
         dim = self.text_emb.weight.shape[1]
         self.image_emb = nn.Embedding(num_image_tokens, dim)
-        print(dim,image_fmap_size,image_fmap_size)
-        self.text_pos_emb = torch.load(wpe_dir) if not rotary_emb else always(0)  # +1 for <bos>
+        print(dim, image_fmap_size, image_fmap_size)
+        self.text_pos_emb = (
+            torch.load(wpe_dir) if not rotary_emb else always(0)
+        )  # +1 for <bos>
         self.image_pos_emb = (
-            AxialPositionalEmbedding(dim, axial_shape=(image_fmap_size, image_fmap_size))
+            AxialPositionalEmbedding(
+                dim, axial_shape=(image_fmap_size, image_fmap_size)
+            )
             if not rotary_emb
             else always(0)
         )
 
-        self.num_text_tokens = (
-            num_text_tokens  # for offsetting logits index and calculating cross entropy loss
-        )
+        self.num_text_tokens = num_text_tokens  # for offsetting logits index and calculating cross entropy loss
         self.num_image_tokens = num_image_tokens
 
         self.text_seq_len = text_seq_len
@@ -121,8 +122,7 @@ class DALLE_Klue_Roberta(nn.Module):
             self.norm_by_max = DivideMax(dim=-1)
 
         self.to_logits = nn.Sequential(
-            nn.LayerNorm(dim),
-            nn.Linear(dim, self.total_tokens),
+            nn.LayerNorm(dim), nn.Linear(dim, self.total_tokens),
         )
 
         seq_range = torch.arange(seq_len)
@@ -131,27 +131,33 @@ class DALLE_Klue_Roberta(nn.Module):
         seq_range = rearrange(seq_range, "n -> () n ()")
         logits_range = rearrange(logits_range, "d -> () () d")
 
-        logits_mask = ((seq_range >= text_seq_len) & (logits_range < num_text_tokens)) | (
-            (seq_range < text_seq_len) & (logits_range >= num_text_tokens)
-        )
+        logits_mask = (
+            (seq_range >= text_seq_len) & (logits_range < num_text_tokens)
+        ) | ((seq_range < text_seq_len) & (logits_range >= num_text_tokens))
 
         self.register_buffer("logits_mask", logits_mask, persistent=False)
         self.loss_img_weight = loss_img_weight
 
     @torch.no_grad()
     @eval_decorator
-    def generate_texts(self, tokenizer, text=None, *, filter_thres=0.5, temperature=1.0):
+    def generate_texts(
+        self, tokenizer, text=None, *, filter_thres=0.5, temperature=1.0
+    ):
         text_seq_len = self.text_seq_len
         if text is None or text == "":
             text_tokens = torch.tensor([[0]]).cuda()
         else:
-            text_tokens = torch.tensor(tokenizer.tokenizer.encode(text)).cuda().unsqueeze(0)
+            text_tokens = (
+                torch.tensor(tokenizer.tokenizer.encode(text)).cuda().unsqueeze(0)
+            )
 
         for _ in range(text_tokens.shape[1], text_seq_len):
             device = text_tokens.device
 
             tokens = self.text_emb(text_tokens)
-            tokens += self.text_pos_emb(torch.arange(text_tokens.shape[1], device=device))
+            tokens += self.text_pos_emb(
+                torch.arange(text_tokens.shape[1], device=device)
+            )
 
             seq_len = tokens.shape[1]
 
@@ -211,7 +217,9 @@ class DALLE_Klue_Roberta(nn.Module):
         if exists(img):
             image_size = vae.image_size
             assert (
-                img.shape[1] == 3 and img.shape[2] == image_size and img.shape[3] == image_size
+                img.shape[1] == 3
+                and img.shape[2] == image_size
+                and img.shape[3] == image_size
             ), f"input image must have the correct image size {image_size}"
 
             indices = vae.get_codebook_indices(img)
@@ -263,22 +271,22 @@ class DALLE_Klue_Roberta(nn.Module):
 
         # make sure padding in text tokens get unique padding token id
 
-        #text_range = torch.arange(self.text_seq_len, device=device) + (
+        # text_range = torch.arange(self.text_seq_len, device=device) + (
         #    self.num_text_tokens - self.text_seq_len
-        #)
-        #print(torch.max(text))
-        #print(text)
-        #torch.save(text,'text.pt')
-        #text = torch.where(text == 3, text_range, text)
+        # )
+        # print(torch.max(text))
+        # print(text)
+        # torch.save(text,'text.pt')
+        # text = torch.where(text == 3, text_range, text)
 
         # add <bos>
-        #print(text.shape)
-        #print(text)
-        #print(torch.max(text))
+        # print(text.shape)
+        # print(text)
+        # print(torch.max(text))
         text = F.pad(text, (1, 0), value=0)
-        #print(text.shape)
-        #print(text)
-        #print(torch.max(text))
+        # print(text.shape)
+        # print(text)
+        # print(torch.max(text))
         tokens = self.text_emb(text)
         tokens += self.text_pos_emb(torch.arange(text.shape[1], device=device))
 
@@ -345,5 +353,7 @@ class DALLE_Klue_Roberta(nn.Module):
             logits[:, :, self.text_seq_len :], labels[:, self.text_seq_len :]
         )
 
-        loss = (loss_text + self.loss_img_weight * loss_img) / (self.loss_img_weight + 1)
+        loss = (loss_text + self.loss_img_weight * loss_img) / (
+            self.loss_img_weight + 1
+        )
         return loss

@@ -58,9 +58,7 @@ def train():
                 image = dalle.generate_images(
                     text[:1], mask=mask[:1], filter_thres=0.9  # topk sampling at 0.9
                 )
-                save_model(
-                    f"{args.save_path}/dalle_uk.pt", dalle_params, dalle.state_dict()
-                )
+                save_model(f"{args.save_path}/dalle_uk.pt", dalle_params, dalle)
                 wandb.save(f"{args.save_path}/dalle_uk.pt")
 
                 log = {**log, "image": wandb.Image(image, caption=decoded_text)}
