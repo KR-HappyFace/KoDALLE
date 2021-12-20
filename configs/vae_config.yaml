@@ -1,0 +1,18 @@
+VAE_CFG:
+  MODEL_PATH: "/opt/ml/taming-transformers/logs/blue_e4/checkpoint/VQGAN_blue.ckpt"
+  CONFIG_PATH: "/opt/ml/taming-transformers/logs/blue_e4/config/VQGAN_blue.yaml"
+  IMAGE_SIZE: 256
+  IMAGE_PATH: "./"
+
+  NUM_TOKENS: 16384  # codebook image patch tokens
+  NUM_LAYERS: 3
+  NUM_RESNET_BLOCKS: 2
+  SMOOTH_L1_LOSS: False
+#   EMB_DIM = 512
+#   HID_DIM = 256
+  KL_LOSS_WEIGHT: 0
+  STARTING_TEMP: 1.0
+  TEMP_MIN: 0.5
+  ANNEAL_RATE: 1e-6
+  NUM_IMAGES_SAVE: 4
+  BASELINE: False
