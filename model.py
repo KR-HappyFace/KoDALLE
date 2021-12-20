@@ -1,10 +1,8 @@
 from math import log2, sqrt
 import torch
-<<<<<<< HEAD
 from einops import repeat
 
-=======
->>>>>>> 8fc9cb6373b736bdf7f44560a0d4a3d7747cdcad
+
 from torch import nn, einsum
 import torch.nn.functional as F
 import numpy as np
@@ -17,11 +15,8 @@ from dalle_pytorch.vae import OpenAIDiscreteVAE, VQGanVAE
 from dalle_pytorch.transformer import Transformer, DivideMax
 from dalle_pytorch.attention import stable_softmax
 
-<<<<<<< HEAD
 # from clipmodel import *
 
-=======
->>>>>>> 8fc9cb6373b736bdf7f44560a0d4a3d7747cdcad
 
 def exists(val):
     return val is not None
@@ -78,10 +73,6 @@ def top_k(logits, thres=0.5):
 
 # discrete vae class
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8fc9cb6373b736bdf7f44560a0d4a3d7747cdcad
 class DiscreteVAE(nn.Module):
     def __init__(
         self,
@@ -236,10 +227,6 @@ class DiscreteVAE(nn.Module):
 
         return loss, out
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8fc9cb6373b736bdf7f44560a0d4a3d7747cdcad
 class ResBlock(nn.Module):
     def __init__(self, chan):
         super().__init__()
@@ -419,10 +406,7 @@ class DALLE_Klue_Roberta(nn.Module):
         temperature=1.0,
         img=None,
         num_init_img_tokens=None,
-<<<<<<< HEAD
         raw_text=None,
-=======
->>>>>>> 8fc9cb6373b736bdf7f44560a0d4a3d7747cdcad
     ):
         vae, text_seq_len, image_seq_len, num_text_tokens = (
             self.vae,
@@ -431,10 +415,6 @@ class DALLE_Klue_Roberta(nn.Module):
             self.num_text_tokens,
         )
         total_len = text_seq_len + image_seq_len
-<<<<<<< HEAD
-=======
-
->>>>>>> 8fc9cb6373b736bdf7f44560a0d4a3d7747cdcad
         text = text[:, :text_seq_len]  # make sure text is within bounds
         out = text
 
@@ -478,7 +458,6 @@ class DALLE_Klue_Roberta(nn.Module):
 
         img_seq = out[:, -image_seq_len:]
         images = vae.decode(img_seq)
-<<<<<<< HEAD
         print(images.shape)
         if exists(clip):
             from transformers import AutoTokenizer
@@ -495,13 +474,6 @@ class DALLE_Klue_Roberta(nn.Module):
             input_text = input_text.to("cuda")
             text_embeds, image_embeds = clip(input_text, images)
             logits = (text_embeds @ image_embeds.T)
-=======
-
-        if exists(clip):
-            clip_model=torch.load('fashionclip_fn.pt')
-            text_embeds, image_embeds = clip_model(text_seq, images)
-            logits = (text_embeds @ image_embeds.T)*0.07
->>>>>>> 8fc9cb6373b736bdf7f44560a0d4a3d7747cdcad
             return images, logits
 
         return images
@@ -512,10 +484,6 @@ class DALLE_Klue_Roberta(nn.Module):
         ), f"the length {text.shape[-1]} of the text tokens you passed in does not have the correct length ({self.text_seq_len})"
         device, total_seq_len = text.device, self.total_seq_len
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 8fc9cb6373b736bdf7f44560a0d4a3d7747cdcad
         text = F.pad(text, (1, 0), value=0)
         tokens = self.text_emb(text)
         tokens += self.text_pos_emb(torch.arange(text.shape[1], device=device))
