@@ -13,7 +13,6 @@ from dalle_pytorch.transformer import Transformer, DivideMax
 from dalle_pytorch.attention import stable_softmax
 from utils import *
 
-
 # discrete vae class
 class ResBlock(nn.Module):
     def __init__(self, chan):
@@ -269,23 +268,8 @@ class DALLE_Klue_Roberta(nn.Module):
         device, total_seq_len = text.device, self.total_seq_len
 
         # make sure padding in text tokens get unique padding token id
-
-        # text_range = torch.arange(self.text_seq_len, device=device) + (
-        #    self.num_text_tokens - self.text_seq_len
-        # )
-        # print(torch.max(text))
-        # print(text)
-        # torch.save(text,'text.pt')
-        # text = torch.where(text == 3, text_range, text)
-
-        # add <bos>
-        # print(text.shape)
-        # print(text)
-        # print(torch.max(text))
         text = F.pad(text, (1, 0), value=0)
-        # print(text.shape)
-        # print(text)
-        # print(torch.max(text))
+
         tokens = self.text_emb(text)
         tokens += self.text_pos_emb(torch.arange(text.shape[1], device=device))
 
