@@ -11,7 +11,7 @@ DALLE_CFG:
   # configuration mimics of: https://github.com/lucidrains/DALLE-pytorch/discussions/131
   # Hyperparameter testing on pytorch-dalle: https://github.com/lucidrains/DALLE-pytorch/issues/84
   # Another Reference for Hyperparams https://github.com/lucidrains/DALLE-pytorch/issues/86#issue-832121328
-  LEARNING_RATE: 3e-4
+  LEARNING_RATE: 0.0003
   GRAD_CLIP_NORM: 0.5
 
   TEXT_SEQ_LEN: 64
