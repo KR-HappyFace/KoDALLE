@@ -7,23 +7,8 @@ import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 from transformers import AutoTokenizer
-
+from preprocess import remove_style,remove_subj
 # -*- coding:utf8 -*-
-def remove_style(input_text: str) -> str:
-    # split sentences by .
-    sentences = input_text.split(".")
-    return_sentences = []
-
-    for sentence in sentences:
-        if "스타일" in sentence:
-            # remove the sentence from the list
-            pass
-        else:
-            return_sentences.append(sentence)
-            pass
-    # join sentences into one str
-    return ".".join(return_sentences).strip()
-
 
 class TextImageDataset(Dataset):
     def __init__(
