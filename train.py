@@ -24,12 +24,9 @@ from loader import TextImageDataset, ImgDatasetExample
 from dalle.models import DALLE_Klue_Roberta
 from utils import set_seed
 
-###
-
 
 def save_model(save_path, params, model):
     save_obj = {"hparams": params, "vae_params": None, "weights": model.state_dict()}
-
     torch.save(save_obj, save_path)
 
 
@@ -61,7 +58,9 @@ def train():
                 image = dalle.generate_images(
                     text[:1], mask=mask[:1], filter_thres=0.9  # topk sampling at 0.9
                 )
-                save_model(f"{args.save_path}/dalle_uk.pt")
+                save_model(
+                    f"{args.save_path}/dalle_uk.pt", dalle_params, dalle.state_dict()
+                )
                 wandb.save(f"{args.save_path}/dalle_uk.pt")
 
                 log = {**log, "image": wandb.Image(image, caption=decoded_text)}
