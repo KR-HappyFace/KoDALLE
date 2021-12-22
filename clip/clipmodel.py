@@ -56,8 +56,14 @@ class CLIPModel(nn.Module):
         super().__init__()
         self.image_encoder = ImageEncoder("efficientnet_b0", pretrained=False)
         self.text_encoder = TextEncoder(pretrained=True)
-        self.image_projection = ProjectionHead(embedding_dim=1280, projection_dim=512)
-        self.text_projection = ProjectionHead(embedding_dim=768, projection_dim=512)
+        image_embedding_dim = list(self.image_encoder.parameters())[-1].shape[0]
+        text_embedding_dim = list(self.text_encoder.parameters())[-1].shape[0]
+        self.image_projection = ProjectionHead(
+            embedding_dim=image_embedding_dim, projection_dim=512
+        )
+        self.text_projection = ProjectionHead(
+            embedding_dim=text_embedding_dim, projection_dim=512
+        )
 
     def forward(self, text, image):
         image_features = self.image_encoder(image)
