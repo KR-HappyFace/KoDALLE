@@ -6,8 +6,6 @@ import os
 from tqdm import tqdm
 import re
 
-os.environ["TOKENIZERS_PARALLELISM"] = "true"
-
 
 class CLIPDataset(Dataset):
     def __init__(self, texts, images):
