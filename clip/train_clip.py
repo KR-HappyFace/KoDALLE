@@ -112,7 +112,7 @@ def train(model, device, train_paths, val_paths=None, num_epochs=100):
 
         print(f"Epoch Loss: {epoch_loss / len(train_dl)}")
         if val_paths:
-            vloss = evaluate(model, val_dl)
+            vloss = evaluate(model, val_dl, tokenizer)
             if vloss < total_vloss:
                 total_vloss = vloss
                 torch.save(model, "clip.pt")
