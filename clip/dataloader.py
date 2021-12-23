@@ -2,7 +2,6 @@ from torch.utils.data import Dataset
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import cv2
-import os
 from tqdm import tqdm
 import re
 
