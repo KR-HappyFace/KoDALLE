@@ -41,7 +41,8 @@ def evaluate(model, val_dl, tokenizer):
             text = text.to(model.device)
             image = image.float()
             image = image.to(model.device)
-            loss = model(text, image)
+            text_embeds, image_embeds = model(text, image)
+            loss = calculate_loss(text_embeds, image_embeds)
             val_loss += loss
     print(f"Val Loss: {val_loss / len(val_dl)}")
     return val_loss / len(val_dl)
