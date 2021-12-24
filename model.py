@@ -462,7 +462,7 @@ class DALLE_Klue_Roberta(nn.Module):
         if exists(clip):
             from transformers import AutoTokenizer
 
-            clip_tokenizer = AutoTokenizer.from_pretrained("monologg/distilkobert") # clip에 사용된 tokenizer
+            clip_tokenizer = AutoTokenizer.from_pretrained("klue/roberta-base") # clip에 사용된 tokenizer
             input_text = clip_tokenizer(
                 raw_text,
                 padding=True,
