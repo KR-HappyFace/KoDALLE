@@ -14,8 +14,6 @@ from dalle_pytorch.attention import stable_softmax
 from utils import *
 
 
-
-
 class DALLE_Klue_Roberta(nn.Module):
     def __init__(
         self,
@@ -107,7 +105,8 @@ class DALLE_Klue_Roberta(nn.Module):
             self.norm_by_max = DivideMax(dim=-1)
 
         self.to_logits = nn.Sequential(
-            nn.LayerNorm(dim), nn.Linear(dim, self.total_tokens),
+            nn.LayerNorm(dim),
+            nn.Linear(dim, self.total_tokens),
         )
 
         seq_range = torch.arange(seq_len)
@@ -125,58 +124,6 @@ class DALLE_Klue_Roberta(nn.Module):
 
     @torch.no_grad()
     @eval_decorator
-    def generate_texts(
-        self, tokenizer, text=None, *, filter_thres=0.5, temperature=1.0
-    ):
-        text_seq_len = self.text_seq_len
-        if text is None or text == "":
-            text_tokens = torch.tensor([[0]]).cuda()
-        else:
-            text_tokens = (
-                torch.tensor(tokenizer.tokenizer.encode(text)).cuda().unsqueeze(0)
-            )
-
-        for _ in range(text_tokens.shape[1], text_seq_len):
-            device = text_tokens.device
-
-            tokens = self.text_emb(text_tokens)
-            tokens += self.text_pos_emb(
-                torch.arange(text_tokens.shape[1], device=device)
-            )
-
-            seq_len = tokens.shape[1]
-
-            output_transf = self.transformer(tokens)
-
-            if self.stable:
-                output_transf = self.norm_by_max(output_transf)
-
-            logits = self.to_logits(output_transf)
-
-            # mask logits to make sure text predicts text (except last token), and image predicts image
-
-            logits_mask = self.logits_mask[:, :seq_len]
-            max_neg_value = -torch.finfo(logits.dtype).max
-            logits.masked_fill_(logits_mask, max_neg_value)
-            logits = logits[:, -1, :]
-
-            filtered_logits = top_k(logits, thres=filter_thres)
-            probs = stable_softmax(filtered_logits / temperature, dim=-1)
-            sample = torch.multinomial(probs, 1)
-
-            text_tokens = torch.cat((text_tokens, sample), dim=-1)
-
-        padding_tokens = set(
-            np.arange(self.text_seq_len) + (self.num_text_tokens - self.text_seq_len)
-        )
-        texts = [
-            tokenizer.tokenizer.decode(text_token, pad_tokens=padding_tokens)
-            for text_token in text_tokens
-        ]
-        return text_tokens, texts
-
-    @torch.no_grad()
-    @eval_decorator
     def generate_images(
         self,
         text,
@@ -188,7 +135,7 @@ class DALLE_Klue_Roberta(nn.Module):
         img=None,
         num_init_img_tokens=None,
     ):
-        origin_text=text
+        origin_text = text
         vae, text_seq_len, image_seq_len, num_text_tokens = (
             self.vae,
             self.text_seq_len,
@@ -244,13 +191,13 @@ class DALLE_Klue_Roberta(nn.Module):
         images = vae.decode(img_seq)
 
         if exists(clip):
-            #from transformers import AutoTokenizer
+            # from transformers import AutoTokenizer
 
-            #clip_tokenizer = AutoTokenizer.from_pretrained("monologg/distilkobert") # clip에 사용된 tokenizer
-            #origin_text
-            #input_text = input_text.to("cuda")
+            # clip_tokenizer = AutoTokenizer.from_pretrained("monologg/distilkobert") # clip에 사용된 tokenizer
+            # origin_text
+            # input_text = input_text.to("cuda")
             text_embeds, image_embeds = clip(origin_text, images)
-            logits = (text_embeds @ image_embeds.T)
+            logits = text_embeds @ image_embeds.T
             return images, logits
 
         return images

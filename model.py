@@ -73,6 +73,7 @@ def top_k(logits, thres=0.5):
 
 # discrete vae class
 
+
 class DiscreteVAE(nn.Module):
     def __init__(
         self,
@@ -111,18 +112,23 @@ class DiscreteVAE(nn.Module):
         dec_init_chan = codebook_dim if not has_resblocks else dec_chans[0]
         dec_chans = [dec_init_chan, *dec_chans]
 
-        enc_chans_io, dec_chans_io = map(lambda t: list(zip(t[:-1], t[1:])), (enc_chans, dec_chans))
+        enc_chans_io, dec_chans_io = map(
+            lambda t: list(zip(t[:-1], t[1:])), (enc_chans, dec_chans)
+        )
 
         enc_layers = []
         dec_layers = []
 
         for (enc_in, enc_out), (dec_in, dec_out) in zip(enc_chans_io, dec_chans_io):
             enc_layers.append(
-                nn.Sequential(nn.Conv2d(enc_in, enc_out, 4, stride=2, padding=1), nn.ReLU())
+                nn.Sequential(
+                    nn.Conv2d(enc_in, enc_out, 4, stride=2, padding=1), nn.ReLU()
+                )
             )
             dec_layers.append(
                 nn.Sequential(
-                    nn.ConvTranspose2d(dec_in, dec_out, 4, stride=2, padding=1), nn.ReLU()
+                    nn.ConvTranspose2d(dec_in, dec_out, 4, stride=2, padding=1),
+                    nn.ReLU(),
                 )
             )
 
@@ -183,7 +189,14 @@ class DiscreteVAE(nn.Module):
         images = self.decoder(image_embeds)
         return images
 
-    def forward(self, img, return_loss=False, return_recons=False, return_logits=False, temp=None):
+    def forward(
+        self,
+        img,
+        return_loss=False,
+        return_recons=False,
+        return_logits=False,
+        temp=None,
+    ):
         device, num_tokens, image_size, kl_div_loss_weight = (
             img.device,
             self.num_tokens,
@@ -202,7 +215,9 @@ class DiscreteVAE(nn.Module):
             return logits  # return logits for getting hard image indices for DALL-E training
 
         temp = default(temp, self.temperature)
-        soft_one_hot = F.gumbel_softmax(logits, tau=temp, dim=1, hard=self.straight_through)
+        soft_one_hot = F.gumbel_softmax(
+            logits, tau=temp, dim=1, hard=self.straight_through
+        )
         sampled = einsum("b n h w, n d -> b d h w", soft_one_hot, self.codebook.weight)
         out = self.decoder(sampled)
 
@@ -226,6 +241,7 @@ class DiscreteVAE(nn.Module):
             return loss
 
         return loss, out
+
 
 class ResBlock(nn.Module):
     def __init__(self, chan):
@@ -283,16 +299,18 @@ class DALLE_Klue_Roberta(nn.Module):
         dim = self.text_emb.weight.shape[1]
         self.image_emb = nn.Embedding(num_image_tokens, dim)
         print(dim, image_fmap_size, image_fmap_size)
-        self.text_pos_emb = torch.load(wpe_dir) if not rotary_emb else always(0)  # +1 for <bos>
+        self.text_pos_emb = (
+            torch.load(wpe_dir) if not rotary_emb else always(0)
+        )  # +1 for <bos>
         self.image_pos_emb = (
-            AxialPositionalEmbedding(dim, axial_shape=(image_fmap_size, image_fmap_size))
+            AxialPositionalEmbedding(
+                dim, axial_shape=(image_fmap_size, image_fmap_size)
+            )
             if not rotary_emb
             else always(0)
         )
 
-        self.num_text_tokens = (
-            num_text_tokens  # for offsetting logits index and calculating cross entropy loss
-        )
+        self.num_text_tokens = num_text_tokens  # for offsetting logits index and calculating cross entropy loss
         self.num_image_tokens = num_image_tokens
 
         self.text_seq_len = text_seq_len
@@ -341,58 +359,12 @@ class DALLE_Klue_Roberta(nn.Module):
         seq_range = rearrange(seq_range, "n -> () n ()")
         logits_range = rearrange(logits_range, "d -> () () d")
 
-        logits_mask = ((seq_range >= text_seq_len) & (logits_range < num_text_tokens)) | (
-            (seq_range < text_seq_len) & (logits_range >= num_text_tokens)
-        )
+        logits_mask = (
+            (seq_range >= text_seq_len) & (logits_range < num_text_tokens)
+        ) | ((seq_range < text_seq_len) & (logits_range >= num_text_tokens))
 
         self.register_buffer("logits_mask", logits_mask, persistent=False)
         self.loss_img_weight = loss_img_weight
-
-    @torch.no_grad()
-    @eval_decorator
-    def generate_texts(self, tokenizer, text=None, *, filter_thres=0.5, temperature=1.0):
-        text_seq_len = self.text_seq_len
-        if text is None or text == "":
-            text_tokens = torch.tensor([[0]]).cuda()
-        else:
-            text_tokens = torch.tensor(tokenizer.tokenizer.encode(text)).cuda().unsqueeze(0)
-
-        for _ in range(text_tokens.shape[1], text_seq_len):
-            device = text_tokens.device
-
-            tokens = self.text_emb(text_tokens)
-            tokens += self.text_pos_emb(torch.arange(text_tokens.shape[1], device=device))
-
-            seq_len = tokens.shape[1]
-
-            output_transf = self.transformer(tokens)
-
-            if self.stable:
-                output_transf = self.norm_by_max(output_transf)
-
-            logits = self.to_logits(output_transf)
-
-            # mask logits to make sure text predicts text (except last token), and image predicts image
-
-            logits_mask = self.logits_mask[:, :seq_len]
-            max_neg_value = -torch.finfo(logits.dtype).max
-            logits.masked_fill_(logits_mask, max_neg_value)
-            logits = logits[:, -1, :]
-
-            filtered_logits = top_k(logits, thres=filter_thres)
-            probs = stable_softmax(filtered_logits / temperature, dim=-1)
-            sample = torch.multinomial(probs, 1)
-
-            text_tokens = torch.cat((text_tokens, sample), dim=-1)
-
-        padding_tokens = set(
-            np.arange(self.text_seq_len) + (self.num_text_tokens - self.text_seq_len)
-        )
-        texts = [
-            tokenizer.tokenizer.decode(text_token, pad_tokens=padding_tokens)
-            for text_token in text_tokens
-        ]
-        return text_tokens, texts
 
     @torch.no_grad()
     @eval_decorator
@@ -422,7 +394,9 @@ class DALLE_Klue_Roberta(nn.Module):
         if exists(img):
             image_size = vae.image_size
             assert (
-                img.shape[1] == 3 and img.shape[2] == image_size and img.shape[3] == image_size
+                img.shape[1] == 3
+                and img.shape[2] == image_size
+                and img.shape[3] == image_size
             ), f"input image must have the correct image size {image_size}"
 
             indices = vae.get_codebook_indices(img)
@@ -462,14 +436,14 @@ class DALLE_Klue_Roberta(nn.Module):
         print(images.shape)
         if exists(clip):
 
-            #from transformers import AutoTokenizer
+            # from transformers import AutoTokenizer
 
-            #clip_tokenizer = AutoTokenizer.from_pretrained("monologg/distilkobert") # clip에 사용된 tokenizer
-            #origin_text
-            #input_text = input_text.to("cuda")
+            # clip_tokenizer = AutoTokenizer.from_pretrained("monologg/distilkobert") # clip에 사용된 tokenizer
+            # origin_text
+            # input_text = input_text.to("cuda")
             text_embeds, image_embeds = clip(origin_text, images)
 
-            logits = (text_embeds @ image_embeds.T)
+            logits = text_embeds @ image_embeds.T
             return images, logits
 
         return images
@@ -547,5 +521,7 @@ class DALLE_Klue_Roberta(nn.Module):
             logits[:, :, self.text_seq_len :], labels[:, self.text_seq_len :]
         )
 
-        loss = (loss_text + self.loss_img_weight * loss_img) / (self.loss_img_weight + 1)
+        loss = (loss_text + self.loss_img_weight * loss_img) / (
+            self.loss_img_weight + 1
+        )
         return loss
