@@ -1,15 +1,13 @@
-from random import randint
+from random import randint, choice
 from pathlib import Path
 from typing import Tuple
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 from transformers import AutoTokenizer
 from preprocess import remove_style, remove_subj
-
-# -*- coding:utf8 -*-
 
 
 class TextImageDataset(Dataset):
@@ -72,14 +70,20 @@ class TextImageDataset(Dataset):
         text_file = self.text_files[key]
         image_file = self.image_files[key]
 
-        image = Image.open(image_file)
         descriptions = text_file.read_text(encoding="utf-8")
         descriptions = remove_style(descriptions).split("\n")
         descriptions = list(filter(lambda t: len(t) > 0, descriptions))
 
+        try:
+            description = choice(descriptions)
+        except IndexError as zero_captions_in_file_ex:
+            print(f"An exception occurred trying to load file {text_file}.")
+            print(f"Skipping index {ind}")
+            return self.skip_sample(ind)
+
         # ADD PREPROCESSING FUNCTION HERE
         encoded_dict = self.tokenizer(
-            descriptions,
+            description,
             return_tensors="pt",
             padding="max_length",
             truncation=True,
@@ -93,7 +97,13 @@ class TextImageDataset(Dataset):
         input_ids = flattened_dict["input_ids"]
         attention_mask = flattened_dict["attention_mask"]
 
-        image_tensor = self.image_transform(image)
+        try:
+            image_tensor = self.image_transform(Image.open(image_file))
+        except (UnidentifiedImageError, OSError) as corrupt_image_exceptions:
+            print(f"An exception occurred trying to load file {image_file}.")
+            print(f"Skipping index {ind}")
+            return self.skip_sample(ind)
+
         return input_ids, image_tensor, attention_mask
 
     def random_sample(self):

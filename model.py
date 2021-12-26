@@ -11,7 +11,7 @@ from dalle_pytorch.vae import OpenAIDiscreteVAE, VQGanVAE
 
 from dalle_pytorch.transformer import Transformer, DivideMax
 from utils import *
-
+from tqdm import tqdm
 
 class DALLE_Klue_Roberta(nn.Module):
     def __init__(
@@ -167,7 +167,7 @@ class DALLE_Klue_Roberta(nn.Module):
             indices = indices[:, :num_img_tokens]
             out = torch.cat((out, indices), dim=-1)
 
-        for cur_len in range(out.shape[1], total_len):
+        for cur_len in tqdm(range(out.shape[1], total_len)):
             is_image = cur_len >= text_seq_len
 
             text, image = out[:, :text_seq_len], out[:, text_seq_len:]
