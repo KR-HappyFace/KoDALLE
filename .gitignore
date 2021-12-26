@@ -15,7 +15,8 @@ __pycache__/
 *.ipynb
 # C extensions
 *.so
-
+*.yaml
+VQGAN_blue_e7
 # Distribution / packaging
 .Python
 build/

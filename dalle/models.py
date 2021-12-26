@@ -2,15 +2,14 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 import numpy as np
-
+from einops import repeat
 from axial_positional_embedding import AxialPositionalEmbedding
 from einops import rearrange
 
-from dalle_pytorch import distributed_utils, DiscreteVAE
+from dalle_pytorch import DiscreteVAE
 from dalle_pytorch.vae import OpenAIDiscreteVAE, VQGanVAE
 
 from dalle_pytorch.transformer import Transformer, DivideMax
-from dalle_pytorch.attention import stable_softmax
 from utils import *
 
 
@@ -126,16 +125,18 @@ class DALLE_Klue_Roberta(nn.Module):
     @eval_decorator
     def generate_images(
         self,
-        text,
+        encoded_text,
         *,
         clip=None,
-        mask=None,
         filter_thres=0.5,
         temperature=1.0,
         img=None,
         num_init_img_tokens=None,
+        img_num=1,
     ):
-        origin_text = text
+        text = encoded_text['input_ids']
+        text=repeat(text,'() n -> b n',b=img_num)
+        mask=encoded_text['attention_mask']
         vae, text_seq_len, image_seq_len, num_text_tokens = (
             self.vae,
             self.text_seq_len,
@@ -146,7 +147,7 @@ class DALLE_Klue_Roberta(nn.Module):
 
         text = text[:, :text_seq_len]  # make sure text is within bounds
         out = text
-
+        
         if exists(img):
             image_size = vae.image_size
             assert (
@@ -185,18 +186,14 @@ class DALLE_Klue_Roberta(nn.Module):
             if out.shape[1] <= text_seq_len:
                 mask = F.pad(mask, (0, 1), value=True)
 
-        text_seq = out[:, :text_seq_len]
+
 
         img_seq = out[:, -image_seq_len:]
         images = vae.decode(img_seq)
 
         if exists(clip):
-            # from transformers import AutoTokenizer
-
-            # clip_tokenizer = AutoTokenizer.from_pretrained("monologg/distilkobert") # clip에 사용된 tokenizer
-            # origin_text
-            # input_text = input_text.to("cuda")
-            text_embeds, image_embeds = clip(origin_text, images)
+            #encoded_text = encoded_text.to("cuda")
+            text_embeds, image_embeds = clip(encoded_text, images)
             logits = text_embeds @ image_embeds.T
             return images, logits
 
