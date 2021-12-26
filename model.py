@@ -461,12 +461,14 @@ class DALLE_Klue_Roberta(nn.Module):
         images = vae.decode(img_seq)
         print(images.shape)
         if exists(clip):
+
             #from transformers import AutoTokenizer
 
             #clip_tokenizer = AutoTokenizer.from_pretrained("monologg/distilkobert") # clip에 사용된 tokenizer
             #origin_text
             #input_text = input_text.to("cuda")
             text_embeds, image_embeds = clip(origin_text, images)
+
             logits = (text_embeds @ image_embeds.T)
             return images, logits
 
