@@ -13,20 +13,7 @@ from dalle_pytorch.transformer import Transformer, DivideMax
 from dalle_pytorch.attention import stable_softmax
 from utils import *
 
-# discrete vae class
-class ResBlock(nn.Module):
-    def __init__(self, chan):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Conv2d(chan, chan, 3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(chan, chan, 3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(chan, chan, 1),
-        )
 
-    def forward(self, x):
-        return self.net(x) + x
 
 
 class DALLE_Klue_Roberta(nn.Module):
@@ -201,6 +188,7 @@ class DALLE_Klue_Roberta(nn.Module):
         img=None,
         num_init_img_tokens=None,
     ):
+        origin_text=text
         vae, text_seq_len, image_seq_len, num_text_tokens = (
             self.vae,
             self.text_seq_len,
@@ -256,8 +244,14 @@ class DALLE_Klue_Roberta(nn.Module):
         images = vae.decode(img_seq)
 
         if exists(clip):
-            scores = clip(text_seq, images, return_loss=False)
-            return images, scores
+            #from transformers import AutoTokenizer
+
+            #clip_tokenizer = AutoTokenizer.from_pretrained("monologg/distilkobert") # clip에 사용된 tokenizer
+            #origin_text
+            #input_text = input_text.to("cuda")
+            text_embeds, image_embeds = clip(origin_text, images)
+            logits = (text_embeds @ image_embeds.T)
+            return images, logits
 
         return images
 
