@@ -1,6 +1,6 @@
 # KoDALLE
 
-[![Generic badge](https://img.shields.io/badge/🤗-Live%20Demo%20on%20Spaces-blue.svg)](https://huggingface.co/spaces/nateraw/spaces-template-gradio) [![Wandb Log](https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg)](https://wandb.ai/happyface-boostcamp/final)
+[![Generic badge](https://img.shields.io/badge/🤗-Live%20Demo%20on%20Spaces-blue.svg)](https://huggingface.co/spaces/happyface/KoDALLE) [![Wandb Log](https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg)](https://wandb.ai/happyface-boostcamp/final)
 
 ![image-20211227151557604](assets/README/image-20211227151557604.png)
 
