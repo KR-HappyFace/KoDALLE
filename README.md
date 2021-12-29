@@ -1,6 +1,6 @@
 # KoDALLE
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1sKNRH0fM73uLi-6BDgfGs3YiiVdvs6lU?usp=sharing) [![Wandb Log](https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg)](https://wandb.ai/happyface-boostcamp/final)
+[![Generic badge](https://img.shields.io/badge/🤗-Live%20Demo%20on%20Spaces-blue.svg)](https://huggingface.co/spaces/nateraw/spaces-template-gradio) [![Wandb Log](https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg)](https://wandb.ai/happyface-boostcamp/final)
 
 ![image-20211227151557604](assets/README/image-20211227151557604.png)
 
@@ -57,11 +57,11 @@ Experimentations were conducted with the following Korean Transformers Models’
 - [KoGPT Trinity of SKT](https://huggingface.co/skt/ko-gpt-trinity-1.2B-v0.5): Vocab Size of 51200, Embedding Dimension of 1920.
 - [KoGPT of Kakao Brain](https://huggingface.co/kakaobrain/kogpt): Vocab Size of 64512, Embedding Dimension of 4096.
 
-KoDALLE with klue/roberta-large's wpe and wte which is trainable on 16GB GPU Google Colab environment. Hyperparams related to the DALLE's model size are following.
+KoDALLE with klue/roberta-large's wpe and wte were trained on 32GB V100 GPU environment. Hyperparams related to the DALLE's model size are following.
 
 ```
-'BATCH_SIZE': 32
-'DEPTH': 2
+'BATCH_SIZE': 40
+'DEPTH': 16
 'TEXT_SEQ_LEN': 128
 'VOCAB_SIZE': 32000
 'MODEL_DIM': 1024
