@@ -8,6 +8,8 @@
 
 ### Background
 
+[📂 For the project details, please refer to README.pdf](https://github.com/KR-HappyFace/KoDALLE/blob/main/README.pdf)
+
 - Training DALLE model from scratch demands large size paired dataset of images and captions. For example, OpenAI DALLE is trained with more than 250 million text-image pairs for the training.
 - If the dataset isn’t large enough or is limited to specific domains, number of vocabularies in the trained DALLE model are insufficient. For instance, 1 million text captions of K-Fashion dataset only consists of more or less than 300 tokens.
 - Therefore, inferencing from such DALLE models could be problematic if the given sentence query is unconnected to the originally trained captions’ text dataset.
