@@ -89,3 +89,28 @@ KoDALLE with klue/roberta-large's wpe and wte were trained on 32GB V100 GPU envi
 - [x] Modulize in python code.
 - [x] Update Inference code.
 - [ ] Update FID and IS metrics on test and validation dataset.
+
+### Citations
+
+```bibtex
+@misc{ramesh2021zeroshot,
+    title   = {Zero-Shot Text-to-Image Generation}, 
+    author  = {Aditya Ramesh and Mikhail Pavlov and Gabriel Goh and Scott Gray and Chelsea Voss and Alec Radford and Mark Chen and Ilya Sutskever},
+    year    = {2021},
+    eprint  = {2102.12092},
+    archivePrefix = {arXiv},
+    primaryClass = {cs.CV}
+}
+
+```
+
+```bibtex
+@misc{esser2021taming,
+    title   = {Taming Transformers for High-Resolution Image Synthesis},
+    author  = {Patrick Esser and Robin Rombach and Björn Ommer},
+    year    = {2021},
+    eprint  = {2012.09841},
+    archivePrefix = {arXiv},
+    primaryClass = {cs.CV}
+}
+```
