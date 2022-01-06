@@ -1,6 +1,6 @@
 # KoDALLE
 
-[![Generic badge](https://img.shields.io/badge/🤗-Live%20Demo%20on%20Spaces-blue.svg)](https://huggingface.co/spaces/happyface/KoDALLE) [![Wandb Log](https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg)](https://wandb.ai/happyface-boostcamp/final)
+[![Generic badge](https://img.shields.io/badge/📄-Presentation-blue.svg)](https://github.com/KR-HappyFace/KoDALLE/blob/main/README.pdf) [![Wandb Log](https://raw.githubusercontent.com/wandb/assets/main/wandb-github-badge-gradient.svg)](https://wandb.ai/happyface-boostcamp/final)
 
 [![image-20211227151557604](assets/README/image-20211227151557604.png)](https://github.com/KR-HappyFace/KoDALLE/blob/main/README.pdf)
 
@@ -31,25 +31,25 @@
 
 **The team constructed Text to Fashion Design DALLE model in Korean language with less than 100k text-image sampled pairs.**
 
-|                     |                                                              |
-| :-----------------: | :----------------------------------------------------------: |
+|                     |                                                                                                                                                                                                                      |
+| :-----------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 |     **Caption**     | 하의에서 색상은 스카이블루이다. 상의에서 기장은 롱이다. 색상은 화이트이다. 카테고리는 블라우스이다. 디테일에는 셔링이다. 소매기장은 반팔이다. 소재에는 실크이다. 프린트에는 무지이다. 넥라인은 브이넥이다. 핏은 노멀 |
-| **Generated Image** | <img height="250" width="200" alt="image" src="assets/README/image-20211227152252313.png"> |
+| **Generated Image** |                                                              <img height="250" width="200" alt="image" src="assets/README/image-20211227152252313.png">                                                              |
 
-|                     |                                                              |
-| :-----------------: | :----------------------------------------------------------: |
+|                     |                                                                                                                   |
+| :-----------------: | :---------------------------------------------------------------------------------------------------------------: |
 |     **Caption**     | 아우터는 색상이 카키 소재가 우븐 핏이 루즈인 코트이다. 하의는 색상이 네이비 소재가 데님 핏이 스키니인 청바지이다. |
-| **Generated Image** | <img height="250" width="200" alt="image" src="assets/README/image-20211227152034538.png"> |
+| **Generated Image** |            <img height="250" width="200" alt="image" src="assets/README/image-20211227152034538.png">             |
 
-|                     |                                                              |
-| :-----------------: | :----------------------------------------------------------: |
+|                     |                                                                                                                                                                                                                         |
+| :-----------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 |     **Caption**     | 하의에서 기장은 발목이다. 색상은 블루이다. 카테고리는 스커트이다. 소재에는 데님이다. 핏은 와이드이다. 상의에서 색상은 화이트이다. 카테고리는 블라우스이다. 디테일에는 셔링이다. 소매기장은 반팔이다. 소재에는 우븐이다. |
-| **Generated Image** | <img height="250" width="200" alt="image" src="assets/README/image-20211227152127324.png"> |
+| **Generated Image** |                                                               <img height="250" width="200" alt="image" src="assets/README/image-20211227152127324.png">                                                                |
 
-|                     |                                                              |
-| :-----------------: | :----------------------------------------------------------: |
+|                     |                                                                                                                                                                                                                                                                       |
+| :-----------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 |     **Caption**     | 상의에서 기장은 노멀이다. 상의에서 색상은 화이트이다. 상의에서 서브색상은 블랙이다. 상의에서 카테고리는 티셔츠이다. 상의에서 소매기장은 반팔이다. 상의에서 소재에는 저지이다. 상의에서 프린트에는 레터링이다. 상의에서 넥라인은 라운드넥이다. 상의에서 핏은 루즈이다. |
-| **Generated Image** | <img height="250" width="200" alt="image" src="assets/README/image-20211227152337621.png"> |
+| **Generated Image** |                                                                                      <img height="250" width="200" alt="image" src="assets/README/image-20211227152337621.png">                                                                                       |
 
 ### Methodology
 
@@ -96,7 +96,7 @@ KoDALLE with klue/roberta-large's wpe and wte were trained on 32GB V100 GPU envi
 
 ```bibtex
 @misc{ramesh2021zeroshot,
-    title   = {Zero-Shot Text-to-Image Generation}, 
+    title   = {Zero-Shot Text-to-Image Generation},
     author  = {Aditya Ramesh and Mikhail Pavlov and Gabriel Goh and Scott Gray and Chelsea Voss and Alec Radford and Mark Chen and Ilya Sutskever},
     year    = {2021},
     eprint  = {2102.12092},
