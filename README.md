@@ -4,7 +4,7 @@
 
 [![image-20211227151557604](assets/README/image-20211227151557604.png)](https://github.com/KR-HappyFace/KoDALLE/blob/main/README.pdf)
 
-**Utilizing pretrained language model’s token embedding layer and position embedding layer as DALLE’s text encoder.**
+**Training DALLE from scratch, utilizing target language's PLMs' token embedding layer and position embedding layer as text encoder.**
 
 ### Background
 
